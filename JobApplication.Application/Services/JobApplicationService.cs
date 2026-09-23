@@ -2,6 +2,7 @@ using JobApplication.Application.DTOs;
 using JobApplication.Application.Interfaces;
 using JobApplication.Domain.Entities;
 using JobApplication.Domain.Enums;
+using Hangfire;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,6 +82,9 @@ namespace JobApplication.Application.Services
 
             _repository.Update(application);
             await _repository.SaveChangesAsync();
+
+            BackgroundJob.Enqueue<INotificationService>(
+                x => x.NotifyCandidate(applicationId));
 
             return CancelApplicationResult.Success;
         }

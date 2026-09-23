@@ -17,6 +17,7 @@ using JobApplication.Application.Commands.Jobs.CloseJob;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using Hangfire;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,6 +26,10 @@ namespace JobApplication.Tests
 {
     public class Day3VerificationTests
     {
+        static Day3VerificationTests()
+        {
+            JobStorage.Current = new Hangfire.InMemory.InMemoryStorage();
+        }
         private ApplicationDbContext CreateInMemoryDbContext(string dbName)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
