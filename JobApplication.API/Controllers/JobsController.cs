@@ -18,6 +18,7 @@ namespace JobApplication.API.Controllers
         private readonly IJobService _jobService;
         private readonly IMediator _mediator;
 
+        [Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructor]
         public JobsController(IJobService jobService, IMediator mediator)
         {
             _jobService = jobService;

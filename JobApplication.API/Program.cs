@@ -1,6 +1,8 @@
+using Hangfire;
 using JobApplication.Application.Interfaces;
 using JobApplication.Application.Services;
 using JobApplication.Infrastructure.Auth;
+using JobApplication.Infrastructure.Notifications;
 using JobApplication.Infrastructure.Persistence;
 using JobApplication.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +44,16 @@ namespace JobApplication.API
             builder.Services.AddScoped<IJobService, JobService>();
             builder.Services.AddScoped<JobService>();
             builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
+            builder.Services.AddScoped<INotificationService, EmailNotificationService>();
+
+            // Hangfire
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(connectionString));
+
+            builder.Services.AddHangfireServer();
 
             // MediatR
             builder.Services.AddMediatR(cfg =>
@@ -111,6 +123,8 @@ namespace JobApplication.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHangfireDashboard("/hangfire");
 
             app.MapControllers();
 
