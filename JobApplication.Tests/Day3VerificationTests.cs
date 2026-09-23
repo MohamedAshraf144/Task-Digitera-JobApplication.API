@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using JobApplication.Application.Commands.Jobs.CloseJob;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -44,6 +47,16 @@ namespace JobApplication.Tests
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
+        }
+
+        private IMediator CreateTestMediator(IJobRepository jobRepository)
+        {
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddSingleton(jobRepository);
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CloseJobCommand).Assembly));
+            var provider = services.BuildServiceProvider();
+            return provider.GetRequiredService<IMediator>();
         }
 
         // ==========================================
@@ -219,7 +232,8 @@ namespace JobApplication.Tests
             var context = CreateInMemoryDbContext(nameof(JobsController_Enforces_Ownership_And_Responses));
             var jobRepo = new JobRepository(context);
             var jobService = new JobService(jobRepo);
-            var controller = new JobsController(jobService);
+            var mediator = CreateTestMediator(jobRepo);
+            var controller = new JobsController(jobService, mediator);
 
             int recruiterId = 42;
 
