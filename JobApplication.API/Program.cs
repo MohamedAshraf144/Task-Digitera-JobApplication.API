@@ -43,6 +43,10 @@ namespace JobApplication.API
             builder.Services.AddScoped<JobService>();
             builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
 
+            // MediatR
+            builder.Services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssembly(typeof(JobApplication.Application.Commands.Jobs.CloseJob.CloseJobCommand).Assembly));
+
             // JWT Authentication
             var jwtKey = builder.Configuration["Jwt:Key"] ?? "JobApplicationSecretKeyForAuthentication2026!SecureKeyRequires256BitsMinimum";
             var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "JobApplication.API";

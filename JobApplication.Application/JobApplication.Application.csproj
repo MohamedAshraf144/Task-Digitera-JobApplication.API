@@ -10,4 +10,8 @@
     <ProjectReference Include="..\JobApplication.Domain\JobApplication.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.2.0" />
+  </ItemGroup>
+
 </Project>
