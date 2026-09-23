@@ -27,6 +27,13 @@ namespace JobApplication.Infrastructure.Repositories
             return await _context.Jobs.ToListAsync();
         }
 
+        public async Task<List<Job>> GetActiveJobsOlderThanAsync(DateTime cutoffDate)
+        {
+            return await _context.Jobs
+                .Where(j => j.IsActive && j.CreatedAt <= cutoffDate)
+                .ToListAsync();
+        }
+
         public async Task InsertAsync(Job job)
         {
             await _context.Jobs.AddAsync(job);
