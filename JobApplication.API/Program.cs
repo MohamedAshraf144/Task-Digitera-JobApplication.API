@@ -1,5 +1,7 @@
 using Hangfire;
+using JobApplication.Application.Configuration;
 using JobApplication.Application.Interfaces;
+using JobApplication.Application.Jobs;
 using JobApplication.Application.Services;
 using JobApplication.Infrastructure.Auth;
 using JobApplication.Infrastructure.Notifications;
@@ -40,11 +42,13 @@ namespace JobApplication.API
             builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             // Application Services
+            builder.Services.Configure<JobSettings>(builder.Configuration.GetSection(JobSettings.SectionName));
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IJobService, JobService>();
             builder.Services.AddScoped<JobService>();
             builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
             builder.Services.AddScoped<INotificationService, EmailNotificationService>();
+            builder.Services.AddScoped<IAutoCloseJobsJob, AutoCloseJobsJob>();
 
             // Hangfire
             builder.Services.AddHangfire(configuration => configuration
@@ -125,6 +129,11 @@ namespace JobApplication.API
             app.UseAuthorization();
 
             app.UseHangfireDashboard("/hangfire");
+
+            RecurringJob.AddOrUpdate<IAutoCloseJobsJob>(
+                "auto-close-old-jobs",
+                job => job.ExecuteAsync(),
+                Cron.Daily);
 
             app.MapControllers();
 

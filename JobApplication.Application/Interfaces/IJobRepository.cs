@@ -9,6 +9,7 @@ namespace JobApplication.Application.Interfaces
     {
         Task<Job?> GetByIdAsync(int id);
         Task<List<Job>> GetAllAsync();
+        Task<List<Job>> GetActiveJobsOlderThanAsync(DateTime cutoffDate);
         Task InsertAsync(Job job);
         void Update(Job job);
         IQueryable<Job> Get();

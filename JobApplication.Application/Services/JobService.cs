@@ -24,6 +24,7 @@ namespace JobApplication.Application.Services
                 Title = createJobDto.Title,
                 Description = createJobDto.Description,
                 IsActive = true,
+                CreatedAt = DateTime.UtcNow,
                 RecruiterId = recruiterId
             };
 
